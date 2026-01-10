@@ -78,8 +78,8 @@ async def search_error(message):
             parse_mode='Markdown'
         )
         return
-    if len(error_code) < 7:
-        await bot.reply_to(message, "Минимальная длина кода ошибки - 7 символов")
+    if len(error_code) < 7 or len(error_code) > 10:
+        await bot.reply_to(message, "⚠️ Кода ошибки обычно *7* символов", parse_mode='Markdown')
         return
     model = user_states[user_id]['model']
     async with AsyncSessionLocal() as session:
