@@ -12,12 +12,8 @@ from sqlalchemy import select
 from keyboards.keyboard import get_main_keyboard, get_back_keyboard
 
 
-bot = AsyncTeleBot(
-    os.environ["NES_TELEGRAM_BOT_TOKEN"],
-    request_timeout=60,
-    parse_mode='Markdown',
-    disable_web_page_preview=True
-    )
+bot = AsyncTeleBot(os.environ["NES_TELEGRAM_BOT_TOKEN"])
+bot.request_timeout = 60
 apihelper.READ_TIMEOUT = 60
 apihelper.CONNECT_TIMEOUT = 30 
 
