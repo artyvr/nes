@@ -1,0 +1,13 @@
+services:
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nes-telegram-bot
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - db:/app/db

@@ -6,6 +6,7 @@ from telebot.async_telebot import AsyncTeleBot
 from collections import defaultdict
 from database.models import MX8600, MX8600S
 from database.session import get_db_session
+from database.utils import test_async_connection
 from sqlalchemy import select
 from keyboards.keyboard import get_main_keyboard, get_back_keyboard
 
@@ -106,7 +107,16 @@ async def search_error(message):
         except Exception as e:
             await bot.reply_to(message, f"Ошибка базы данных: {str(e)}")
 
+async def main():
+    try:
+        if await test_async_connection():
+            await bot.polling()
+            return
+    except Exception as e:
+        print(f"Ошибка бота: {e}")
+    finally:
+        print("🛑 Бот остановлен")
 
 if __name__ == '__main__':
-    asyncio.run(bot.polling())
+    asyncio.run(main())
 
