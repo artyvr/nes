@@ -5,7 +5,7 @@ import os
 from telebot.async_telebot import AsyncTeleBot
 from collections import defaultdict
 from database.models import MX8600, MX8600S
-from database.session import AsyncSessionLocal
+from database.session import get_db_session
 from sqlalchemy import select
 from keyboards.keyboard import get_main_keyboard, get_back_keyboard
 
@@ -27,7 +27,7 @@ async def send_welcome(message):
 async def set_model(message):
     user_id = message.from_user.id
     model_text = message.text
-    if "MX8600" in model_text and "S" not in model_text:
+    if model_text == "MX8600":
         user_states[user_id]['model'] = 'MX8600'
         model_name = "MX8600"
     else:
@@ -82,7 +82,7 @@ async def search_error(message):
         await bot.reply_to(message, "⚠️ Кода ошибки обычно *7* символов", parse_mode='Markdown')
         return
     model = user_states[user_id]['model']
-    async with AsyncSessionLocal() as session:
+    async with get_db_session() as session:
         try:
             if model == 'MX8600':
                 query = select(MX8600).where(MX8600.error_code == error_code)
@@ -105,12 +105,8 @@ async def search_error(message):
             await bot.reply_to(message, response, parse_mode='Markdown')
         except Exception as e:
             await bot.reply_to(message, f"Ошибка базы данных: {str(e)}")
-        finally:
-            await session.close()
-
 
 
 if __name__ == '__main__':
     asyncio.run(bot.polling())
-
 
