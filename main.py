@@ -3,6 +3,7 @@
 import asyncio
 import os
 from telebot.async_telebot import AsyncTeleBot
+from telebot import apihelper
 from collections import defaultdict
 from database.models import MX8600, MX8600S
 from database.session import get_db_session
@@ -11,7 +12,15 @@ from sqlalchemy import select
 from keyboards.keyboard import get_main_keyboard, get_back_keyboard
 
 
-bot = AsyncTeleBot(os.environ["NES_TELEGRAM_BOT_TOKEN"])
+bot = AsyncTeleBot(
+    os.environ["NES_TELEGRAM_BOT_TOKEN"],
+    request_timeout=60,
+    parse_mode='Markdown',
+    disable_web_page_preview=True
+    )
+apihelper.READ_TIMEOUT = 60
+apihelper.CONNECT_TIMEOUT = 30 
+
 user_states = defaultdict(dict)
 
 
