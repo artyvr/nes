@@ -13,7 +13,12 @@ from keyboards.keyboard import get_main_keyboard, get_back_keyboard
 
 
 bot = AsyncTeleBot(os.environ["NES_TELEGRAM_BOT_TOKEN"])
-bot.request_timeout = 60
+
+bot.request_timeout = 160
+bot.retry_timeout = 30,     # Таймаут повторной попытки
+bot.num_threads = 4,        # Количество потоков для обработки
+bot.skip_pending = False    # Пропустить ожидающие обновления при старте
+
 apihelper.READ_TIMEOUT = 60
 apihelper.CONNECT_TIMEOUT = 30 
 
