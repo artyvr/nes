@@ -2,6 +2,8 @@
 
 import asyncio
 import os
+from config.settings import MSG_PARSE_MODE
+from utils.text_utils import strip_tags
 from telebot.async_telebot import AsyncTeleBot
 from telebot import apihelper
 from collections import defaultdict
@@ -45,14 +47,14 @@ async def set_model(message):
         user_states[user_id]['model'] = 'MX8600S'
         model_name = "MX8600S"
     response = (
-        f"✅ *Выбрана модель: {model_name}*\n\n"
+        f"✅ <b>Выбрана модель: {model_name}</b>\n\n"
         f"Теперь введите код ошибки.\n"
     )
     await bot.reply_to(
         message, 
         response, 
         reply_markup=get_back_keyboard(),
-        parse_mode='Markdown'
+        parse_mode=MSG_PARSE_MODE
     )
 
 @bot.message_handler(func=lambda m: m.text == "Выбор модели")
@@ -84,13 +86,13 @@ async def search_error(message):
     if not user_states[user_id].get('model'):
         await bot.reply_to(
             message,
-            "⚠️ *Сначала выберите модель оборудования!*\n\n"
+            "⚠️ <b>Сначала выберите модель оборудования!</b>\n\n"
             "Используйте кнопки ниже или команду /start",
-            parse_mode='Markdown'
+            parse_mode=MSG_PARSE_MODE
         )
         return
     if len(error_code) < 7 or len(error_code) > 10:
-        await bot.reply_to(message, "⚠️ Кода ошибки обычно *7* символов", parse_mode='Markdown')
+        await bot.reply_to(message, "⚠️ Кода ошибки обычно <b>7</b> символов", parse_mode=MSG_PARSE_MODE)
         return
     model = user_states[user_id]['model']
     async with get_db_session() as session:
@@ -106,14 +108,14 @@ async def search_error(message):
             error = result.scalar_one_or_none()  
             if error:
                 response = (
-                    f"📟 *Модель:* {model}\n\n"
-                    f"✅ *Ошибка:* {error.error_code}\n\n"
-                    f"📋 *Описание:* {error.description}\n\n"
-                    f"🔧 *Решение:* {error.troubleshooting}"
+                    f"📟 <b>Модель:</b> {model}\n\n"
+                    f"✅ <b>Ошибка:</b> {error.error_code}\n\n"
+                    f"📋 <b>Описание:</b> {strip_tags(error.description)}\n\n"
+                    f"🔧 <b>Решение:</b> {strip_tags(error.troubleshooting)}"
                 )
             else:
                 response = "❌ Ошибка не найдена"
-            await bot.reply_to(message, response, parse_mode='Markdown')
+            await bot.reply_to(message, response, parse_mode=MSG_PARSE_MODE)
         except Exception as e:
             await bot.reply_to(message, f"Ошибка базы данных: {str(e)}")
 
